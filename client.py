@@ -4,14 +4,25 @@ import struct
 import sys
 
 
+def encode_data(data: str) -> bytes:
+    '''
+    Encode data with the following format:
+    b"< 4 bytes describing the length of the data in little-endian >< The data >"
+    '''
+    data_length = struct.pack("<I", len(data))
+    encoded_data = data_length + data.encode()
+
+    return encoded_data
+
+
+
 def send_data(server_ip: str, server_port: int, data: str):
     '''
     Send data to server in address (server_ip, server_port).
     '''
     sock = socket.socket()
     sock.connect((server_ip, server_port))
-    encoded_data = struct.pack("<I", len(data)) + data.encode()
-    sock.sendall(encoded_data)
+    sock.sendall(encode_data(data))
 
 
 def get_args():

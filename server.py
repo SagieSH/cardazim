@@ -5,26 +5,35 @@ import sys
 from threading import Thread
 
 
-def receive_message(connection: socket.socket):
+def decode_data(encoded_data: bytes) -> str:
     '''
-    Receive a message from the connection and print it.
+    Decode data encoded with the following format:
+    b"< 4 bytes describing the length of the data in little-endian >< The data >"
     '''
-    encoded_message = connection.recv(1024)
-    message_length = struct.unpack("<I", encoded_message[:4])[0]
-    message = encoded_message[4: 4 + message_length].decode()
-    print("Received data: " + message)
+    data_length = struct.unpack("<I", encoded_data[:4])[0]
+    data = encoded_data[4: 4 + data_length].decode()
+
+    return data
+
+
+def receive_data(connection: socket.socket):
+    '''
+    Receive data from the connection and print it.
+    '''
+    encoded_data = connection.recv(1024)
+    print("Received data: " + decode_data(encoded_data))
 
 
 def run_server(ip: str, port: int):
     '''
-    Receive connections to (ip, port) and print messages sent by them.
+    Receive connections to (ip, port) and print data sent by them.
     '''
     server = socket.socket()
     server.bind((ip, port))
     server.listen(1000)
     while True:
         connection, _ = server.accept()
-        t = Thread(target=receive_message, args=(connection,))
+        t = Thread(target=receive_data, args=(connection,))
         t.run()
 
 
