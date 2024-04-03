@@ -2,6 +2,17 @@ import argparse
 import socket
 import struct
 import sys
+from threading import Thread
+
+
+def receive_message(connection):
+    '''
+    Receive a message from the connection and print it.
+    '''
+    encoded_message = connection.recv(1024)
+    message_length = struct.unpack("<I", encoded_message[:4])[0]
+    message = encoded_message[4: 4 + message_length].decode()
+    print("Received data: " + message)
 
 
 def run_server(ip, port):
@@ -12,11 +23,9 @@ def run_server(ip, port):
     server.bind((ip, port))
     server.listen(1000)
     while True:
-        conn, _ = server.accept()
-        encoded_message = conn.recv(1024)
-        message_length = struct.unpack("<I", encoded_message[:4])[0]
-        message = encoded_message[4: 4 + message_length].decode()
-        print("Received data: " + message)
+        connection, _ = server.accept()
+        t = Thread(target=receive_message, args=(connection,))
+        t.run()
 
 
 def get_args():
