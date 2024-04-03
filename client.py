@@ -1,22 +1,17 @@
 import argparse
+import socket
+import struct
 import sys
-
-
-###########################################################
-####################### YOUR CODE #########################
-###########################################################
 
 
 def send_data(server_ip, server_port, data):
     '''
     Send data to server in address (server_ip, server_port).
     '''
-    pass
-
-
-###########################################################
-##################### END OF YOUR CODE ####################
-###########################################################
+    sock = socket.socket()
+    sock.connect((server_ip, server_port))
+    encoded_data = struct.pack("<I", len(data)) + data.encode()
+    sock.sendall(encoded_data)
 
 
 def get_args():
