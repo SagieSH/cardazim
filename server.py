@@ -5,7 +5,7 @@ import sys
 from threading import Thread
 
 
-def receive_message(connection):
+def receive_message(connection: socket.socket):
     '''
     Receive a message from the connection and print it.
     '''
@@ -15,7 +15,7 @@ def receive_message(connection):
     print("Received data: " + message)
 
 
-def run_server(ip, port):
+def run_server(ip: str, port: int):
     '''
     Receive connections to (ip, port) and print messages sent by them.
     '''
